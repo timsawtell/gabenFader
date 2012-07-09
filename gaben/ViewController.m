@@ -47,6 +47,7 @@
             } else {
                 self.gabenImageView.image = [UIImage imageNamed:@"gaben1"];
             }
+            self.disapprovingEyes = !self.disapprovingEyes;
             self.gabenImageView.alpha = 1.0f;
         }];
     }];
