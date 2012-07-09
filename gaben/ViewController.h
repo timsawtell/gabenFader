@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface ViewController : UIViewController
-@property (strong, nonatomic) IBOutlet UIImageView *gavenImageView;
+@property (strong, nonatomic) IBOutlet UIImageView *gabenImageView;
 
 @end

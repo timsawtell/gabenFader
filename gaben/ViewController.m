@@ -9,22 +9,24 @@
 #import "ViewController.h"
 
 @interface ViewController ()
+@property (nonatomic, assign) BOOL disapprovingEyes;
 - (void)fade;
 @end
 
 @implementation ViewController
-@synthesize gavenImageView;
+@synthesize gabenImageView, disapprovingEyes;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(fade) userInfo:nil repeats:YES];
+    self.disapprovingEyes = NO; 
 }
 
 - (void)viewDidUnload
 {
-    [self setGavenImageView:nil];
+    [self setGabenImageView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
@@ -37,10 +39,15 @@
 - (void)fade
 {
     [UIView animateWithDuration:3.0f animations:^{
-        self.gavenImageView.alpha = 0.0f;
+        self.gabenImageView.alpha = 0.0f;
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:3.0f animations:^{
-            self.gavenImageView.alpha = 1.0f;
+            if (self.disapprovingEyes) {
+                self.gabenImageView.image = [UIImage imageNamed:@"gaben"];
+            } else {
+                self.gabenImageView.image = [UIImage imageNamed:@"gaben1"];
+            }
+            self.gabenImageView.alpha = 1.0f;
         }];
     }];
 }

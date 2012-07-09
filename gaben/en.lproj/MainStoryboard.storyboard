@@ -22,7 +22,7 @@
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <connections>
-                        <outlet property="gavenImageView" destination="eHH-qJ-fx2" id="O74-fg-rv8"/>
+                        <outlet property="gabenImageView" destination="eHH-qJ-fx2" id="mRc-n9-KsV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3" sceneMemberID="firstResponder"/>
