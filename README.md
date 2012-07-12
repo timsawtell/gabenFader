@@ -7,4 +7,4 @@ Gabe is always watching
 
 New: Creepy fade to black after 1 minute
 
-![gabenwoah](http://i.imgur.com/G3Dy4.jpg)
+![gabenwoah](http://i.imgur.com/3MCSJ.png)
