@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		89BBDBCB15AA767800475A56 /* gaben1.png in Resources */ = {isa = PBXBuildFile; fileRef = 89BBDBCA15AA767800475A56 /* gaben1.png */; };
+		DD1B616515AE3F870087991C /* gaben1Top.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1B616415AE3F870087991C /* gaben1Top.png */; };
 		DDCCEF8115904EF700B390B9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDCCEF8015904EF700B390B9 /* UIKit.framework */; };
 		DDCCEF8315904EF700B390B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDCCEF8215904EF700B390B9 /* Foundation.framework */; };
 		DDCCEF8515904EF700B390B9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDCCEF8415904EF700B390B9 /* CoreGraphics.framework */; };
@@ -23,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		89BBDBCA15AA767800475A56 /* gaben1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gaben1.png; sourceTree = "<group>"; };
+		DD1B616415AE3F870087991C /* gaben1Top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gaben1Top.png; sourceTree = "<group>"; };
 		DDCCEF7C15904EF700B390B9 /* gaben.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gaben.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDCCEF8015904EF700B390B9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		DDCCEF8215904EF700B390B9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -102,6 +104,7 @@
 			children = (
 				DDCCEFA115904FE700B390B9 /* gaben.png */,
 				89BBDBCA15AA767800475A56 /* gaben1.png */,
+				DD1B616415AE3F870087991C /* gaben1Top.png */,
 				DDCCEF8815904EF700B390B9 /* gaben-Info.plist */,
 				DDCCEF8915904EF700B390B9 /* InfoPlist.strings */,
 				DDCCEF8C15904EF700B390B9 /* main.m */,
@@ -166,6 +169,7 @@
 				DDCCEFA91590534700B390B9 /* Icon-iPad.png in Resources */,
 				DDCCEFAB159053EB00B390B9 /* Icon.png in Resources */,
 				89BBDBCB15AA767800475A56 /* gaben1.png in Resources */,
+				DD1B616515AE3F870087991C /* gaben1Top.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
