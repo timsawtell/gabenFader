@@ -24,6 +24,21 @@
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         [self creepyFade];
     });
+    
+    AVCaptureSession *captureSession = [[AVCaptureSession alloc] init];
+    AVCaptureDevice *videoCaptureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    AVCaptureMetadataOutput *metaOutput = [AVCaptureMetadataOutput new];
+    NSError *error = nil;
+    AVCaptureDeviceInput *videoInput = [AVCaptureDeviceInput deviceInputWithDevice:videoCaptureDevice error:&error];
+    if (videoInput) {
+        [captureSession addInput:videoInput];
+        [captureSession addOutput:metaOutput];
+    }
+    else {
+        // Handle the failure.
+        NSLog(@"total failure");
+    }
+    [captureSession startRunning];
 }
 
 - (void)viewDidUnload
@@ -85,6 +100,11 @@
         });
     }
     self.disapprovingEyes = !self.disapprovingEyes;
+}
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
+{
+
 }
 
 @end
