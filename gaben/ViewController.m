@@ -33,7 +33,7 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
     self.gabenImageView.image = [UIImage imageNamed:@"gaben1"];
     self.gabenTopImageView.image = [UIImage imageNamed:@"gaben1Top"];
     self.gabenTopImageView.hidden = YES;
-    double delayInSeconds = 60.0;
+    double delayInSeconds = 5.0;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         [self creepyFade];
@@ -105,7 +105,15 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return NO;// return (interfaceOrientation == UIDeviceOrientationLandscapeLeft || interfaceOrientation == UIDeviceOrientationLandscapeRight);
+    if (interfaceOrientation == UIDeviceOrientationLandscapeLeft) {
+        self.gabenImageView.transform = CGAffineTransformMakeRotation(DegreesToRadians(90));
+    } else if (interfaceOrientation == UIDeviceOrientationLandscapeRight) {
+        self.gabenImageView.transform = CGAffineTransformMakeRotation(DegreesToRadians(270));
+    }
+    self.gabenTopImageView.transform = self.gabenImageView.transform;
+    self.gabenImageView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    self.gabenTopImageView.frame = self.gabenImageView.frame;
+    return (interfaceOrientation == UIDeviceOrientationPortrait);
 }
 
 
