@@ -14,6 +14,7 @@
 		DD55833C15AE8C3200E4B6D4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55833B15AE8C3200E4B6D4 /* QuartzCore.framework */; };
 		DD55833E15AE8C4300E4B6D4 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55833D15AE8C4300E4B6D4 /* CoreMedia.framework */; };
 		DD55834215AE8C5E00E4B6D4 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55834115AE8C5E00E4B6D4 /* CoreVideo.framework */; };
+		DD5DC2DF15AFC9A0000CCB11 /* squarePNG.png in Resources */ = {isa = PBXBuildFile; fileRef = DD5DC2DE15AFC9A0000CCB11 /* squarePNG.png */; };
 		DDC8CC0615AE6C330008A296 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDC8CC0515AE6C330008A296 /* AVFoundation.framework */; };
 		DDCCEF8115904EF700B390B9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDCCEF8015904EF700B390B9 /* UIKit.framework */; };
 		DDCCEF8315904EF700B390B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDCCEF8215904EF700B390B9 /* Foundation.framework */; };
@@ -37,6 +38,7 @@
 		DD55833D15AE8C4300E4B6D4 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		DD55833F15AE8C5000E4B6D4 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		DD55834115AE8C5E00E4B6D4 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		DD5DC2DE15AFC9A0000CCB11 /* squarePNG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = squarePNG.png; path = ../../../Downloads/SquareCam/SquareCam/squarePNG.png; sourceTree = "<group>"; };
 		DDC8CC0515AE6C330008A296 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		DDCCEF7C15904EF700B390B9 /* gaben.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gaben.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDCCEF8015904EF700B390B9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -128,6 +130,7 @@
 		DDCCEF8715904EF700B390B9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DD5DC2DE15AFC9A0000CCB11 /* squarePNG.png */,
 				DDCCEFA115904FE700B390B9 /* gaben.png */,
 				89BBDBCA15AA767800475A56 /* gaben1.png */,
 				DD1B616415AE3F870087991C /* gaben1Top.png */,
@@ -196,6 +199,7 @@
 				DDCCEFAB159053EB00B390B9 /* Icon.png in Resources */,
 				89BBDBCB15AA767800475A56 /* gaben1.png in Resources */,
 				DD1B616515AE3F870087991C /* gaben1Top.png in Resources */,
+				DD5DC2DF15AFC9A0000CCB11 /* squarePNG.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,6 +12,7 @@
 @property (nonatomic, strong) AVCaptureVideoDataOutput *videoDataOutput;
 @property (nonatomic, assign) dispatch_queue_t videoDataOutputQueue;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
+@property (nonatomic, strong) UIImage *square;
 - (void)fade;
 - (void)creepyFade;
 @end
@@ -19,7 +20,8 @@
 static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 
 @implementation ViewController
-@synthesize gabenTopImageView;
+@synthesize previewView;
+@synthesize gabenTopImageView, square;
 @synthesize gabenImageView, disapprovingEyes, faceDetector, isUsingFrontFacingCamera, videoDataOutput, videoDataOutputQueue, stillImageOutput, previewLayer;
 
 - (void)viewDidLoad
@@ -36,10 +38,13 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         [self creepyFade];
     });
-    
-    [self setupAVCapture];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self setupAVCapture];
+}
 
 - (void)creepyFade
 {
@@ -93,32 +98,130 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 {
     [self setGabenImageView:nil];
     [self setGabenTopImageView:nil];
+    [self setPreviewLayer:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return (interfaceOrientation == UIDeviceOrientationLandscapeLeft || interfaceOrientation == UIDeviceOrientationLandscapeRight);
+    return NO;// return (interfaceOrientation == UIDeviceOrientationLandscapeLeft || interfaceOrientation == UIDeviceOrientationLandscapeRight);
 }
 
 
 
 // all the video bullshit happens down here
 
+// called asynchronously as the capture output is capturing sample buffers, this method asks the face detector (if on)
+// to detect features and for each draw the red square in a layer and set appropriate orientation
+- (void)drawFaceBoxesForFeatures:(NSArray *)features forVideoBox:(CGRect)clap orientation:(UIDeviceOrientation)orientation
+{
+	NSArray *sublayers = [NSArray arrayWithArray:[previewLayer sublayers]];
+	NSInteger sublayersCount = [sublayers count], currentSublayer = 0;
+	NSInteger featuresCount = [features count], currentFeature = 0;
+	
+	[CATransaction begin];
+	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+	
+	// hide all the face layers
+	for ( CALayer *layer in sublayers ) {
+		if ( [[layer name] isEqualToString:@"FaceLayer"] )
+			[layer setHidden:YES];
+	}	
+	
+	if ( featuresCount == 0 ) {
+		[CATransaction commit];
+		return; // early bail.
+	}
+    
+	CGSize parentFrameSize = [self.view frame].size;
+	NSString *gravity = [previewLayer videoGravity];
+	BOOL isMirrored = [previewLayer isMirrored];
+	CGRect previewBox = [ViewController videoPreviewBoxForGravity:gravity 
+                                                                 frameSize:parentFrameSize 
+                                                              apertureSize:clap.size];
+	
+	for ( CIFaceFeature *ff in features ) {
+		// find the correct position for the square layer within the previewLayer
+		// the feature box originates in the bottom left of the video frame.
+		// (Bottom right if mirroring is turned on)
+		CGRect faceRect = [ff bounds];
+        
+		// flip preview width and height
+		CGFloat temp = faceRect.size.width;
+		faceRect.size.width = faceRect.size.height;
+		faceRect.size.height = temp;
+		temp = faceRect.origin.x;
+		faceRect.origin.x = faceRect.origin.y;
+		faceRect.origin.y = temp;
+		// scale coordinates so they fit in the preview box, which may be scaled
+		CGFloat widthScaleBy = previewBox.size.width / clap.size.height;
+		CGFloat heightScaleBy = previewBox.size.height / clap.size.width;
+		faceRect.size.width *= widthScaleBy;
+		faceRect.size.height *= heightScaleBy;
+		faceRect.origin.x *= widthScaleBy;
+		faceRect.origin.y *= heightScaleBy;
+        
+		if ( isMirrored )
+			faceRect = CGRectOffset(faceRect, previewBox.origin.x + previewBox.size.width - faceRect.size.width - (faceRect.origin.x * 2), previewBox.origin.y);
+		else
+			faceRect = CGRectOffset(faceRect, previewBox.origin.x, previewBox.origin.y);
+		
+		CALayer *featureLayer = nil;
+		
+		// re-use an existing layer if possible
+		while ( !featureLayer && (currentSublayer < sublayersCount) ) {
+			CALayer *currentLayer = [sublayers objectAtIndex:currentSublayer++];
+			if ( [[currentLayer name] isEqualToString:@"FaceLayer"] ) {
+				featureLayer = currentLayer;
+				[currentLayer setHidden:NO];
+			}
+		}
+		
+		// create a new one if necessary
+		if ( !featureLayer ) {
+			featureLayer = [CALayer new];
+			[featureLayer setContents:(id)[square CGImage]];
+			[featureLayer setName:@"FaceLayer"];
+			[previewLayer addSublayer:featureLayer];
+		}
+		[featureLayer setFrame:faceRect];
+		
+		switch (orientation) {
+			case UIDeviceOrientationPortrait:
+				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(0.))];
+				break;
+			case UIDeviceOrientationPortraitUpsideDown:
+				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(180.))];
+				break;
+			case UIDeviceOrientationLandscapeLeft:
+				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(90.))];
+				break;
+			case UIDeviceOrientationLandscapeRight:
+				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(-90.))];
+				break;
+			case UIDeviceOrientationFaceUp:
+			case UIDeviceOrientationFaceDown:
+			default:
+				break; // leave the layer in its last known orientation
+		}
+		currentFeature++;
+	}
+	
+	[CATransaction commit];
+}
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {	
 	// got an image
 	CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
 	CFDictionaryRef attachments = CMCopyDictionaryOfAttachments(kCFAllocatorDefault, sampleBuffer, kCMAttachmentMode_ShouldPropagate);
-	CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:pixelBuffer options:(__bridge NSDictionary *)attachments];
-	if (attachments)
-		CFRelease(attachments);
+	CIImage *ciImage = [[CIImage alloc] initWithCVPixelBuffer:pixelBuffer options:(__bridge_transfer NSDictionary *)attachments];
+
 	NSDictionary *imageOptions = nil;
 	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
 	int exifOrientation;
-    
+	
     /* kCGImagePropertyOrientation values
      The intended display orientation of the image. If present, this key is a CFNumber value with the same value as defined
      by the TIFF and EXIF specifications -- see enumeration of integer constants. 
@@ -160,33 +263,30 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 			break;
 	}
     
-    imageOptions = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:exifOrientation] forKey:CIDetectorImageOrientation];
+	imageOptions = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:exifOrientation] forKey:CIDetectorImageOrientation];
 	NSArray *features = [faceDetector featuresInImage:ciImage options:imageOptions];
-    if ([features count] > 0) {
-        NSLog(@"woah");
-    }
-    
+	
     // get the clean aperture
     // the clean aperture is a rectangle that defines the portion of the encoded pixel dimensions
     // that represents image data valid for display.
 	CMFormatDescriptionRef fdesc = CMSampleBufferGetFormatDescription(sampleBuffer);
 	CGRect clap = CMVideoFormatDescriptionGetCleanAperture(fdesc, false /*originIsTopLeft == false*/);
-
+	
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		[self drawFaceBoxesForFeatures:features forVideoBox:clap orientation:curDeviceOrientation];
-
 	});
 }
 
 - (void)setupAVCapture
 {
 	NSError *error = nil;
-	
+	self.isUsingFrontFacingCamera = YES;
+    self.square = [UIImage imageNamed:@"squarePNG"];
 	AVCaptureSession *session = [AVCaptureSession new];
 	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
 	    [session setSessionPreset:AVCaptureSessionPreset640x480];
 	else
-	    [session setSessionPreset:AVCaptureSessionPresetPhoto];
+	    [session setSessionPreset:AVCaptureSessionPresetHigh];
 	
     // Select a video device, make an input
 	AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
@@ -201,7 +301,6 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
         [self teardownAVCapture];
     }
 	
-    isUsingFrontFacingCamera = NO;
 	if ( [session canAddInput:deviceInput] )
 		[session addInput:deviceInput];
 	
@@ -228,27 +327,16 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	
     if ( [session canAddOutput:self.videoDataOutput] )
 		[session addOutput:self.videoDataOutput];
-	[[self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
-    
-    if ( [session canAddOutput:videoDataOutput] )
-		[session addOutput:videoDataOutput];
     [[self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:YES];
 	
 	self.previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
 	[self.previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
-	[self.previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-    CALayer *rootLayer = [self.view layer];
+	[self.previewLayer setVideoGravity:AVLayerVideoGravityResizeAspect];
+	CALayer *rootLayer = [self.previewView layer];
 	[rootLayer setMasksToBounds:YES];
-	[previewLayer setFrame:CGRectMake(0, 0, 100, 100)];
-    if ([[UIApplication sharedApplication] statusBarOrientation] == UIDeviceOrientationLandscapeLeft) {
-        [previewLayer setOrientation:AVCaptureVideoOrientationLandscapeLeft];
-    } else {
-        [previewLayer setOrientation:AVCaptureVideoOrientationLandscapeRight];
-    }
-	[rootLayer addSublayer:previewLayer];
-    
-	[session startRunning];
-    
+	[self.previewLayer setFrame:[rootLayer bounds]];
+	[rootLayer addSublayer:self.previewLayer];
+   
     NSDictionary *detectorOptions = [[NSDictionary alloc] initWithObjectsAndKeys:CIDetectorAccuracyLow, CIDetectorAccuracy, nil];
 	self.faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:detectorOptions];
     
@@ -257,100 +345,61 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	
 	for (AVCaptureDevice *d in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) {
 		if ([d position] == desiredPosition) {
-			[[previewLayer session] beginConfiguration];
+			[[self.previewLayer session] beginConfiguration];
 			AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:d error:nil];
 			for (AVCaptureInput *oldInput in [[previewLayer session] inputs]) {
-				[[previewLayer session] removeInput:oldInput];
+				[[self.previewLayer session] removeInput:oldInput];
 			}
-			[[previewLayer session] addInput:input];
-			[[previewLayer session] commitConfiguration];
+			[[self.previewLayer session] addInput:input];
+			[[self.previewLayer session] commitConfiguration];
 			break;
 		}
 	}
+    [session startRunning];
 }
 
-// called asynchronously as the capture output is capturing sample buffers, this method asks the face detector (if on)
-// to detect features and for each draw the red square in a layer and set appropriate orientation
-- (void)drawFaceBoxesForFeatures:(NSArray *)features forVideoBox:(CGRect)clap orientation:(UIDeviceOrientation)orientation
+
+// find where the video box is positioned within the preview layer based on the video size and gravity
++ (CGRect)videoPreviewBoxForGravity:(NSString *)gravity frameSize:(CGSize)frameSize apertureSize:(CGSize)apertureSize
 {
-	NSArray *sublayers = [NSArray arrayWithArray:[previewLayer sublayers]];
-	NSInteger sublayersCount = [sublayers count], currentSublayer = 0;
-	NSInteger featuresCount = [features count], currentFeature = 0;
-	
-	[CATransaction begin];
-	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-	
-	// hide all the face layers
-	for ( CALayer *layer in sublayers ) {
-		if ( [[layer name] isEqualToString:@"FaceLayer"] )
-			[layer setHidden:YES];
-	}	
-	
-	if ( featuresCount == 0) {
-		[CATransaction commit];
-		return; // early bail.
-	}
+    CGFloat apertureRatio = apertureSize.height / apertureSize.width;
+    CGFloat viewRatio = frameSize.width / frameSize.height;
     
-    for ( CIFaceFeature *ff in features ) {
-		// find the correct position for the square layer within the previewLayer
-		// the feature box originates in the bottom left of the video frame.
-		// (Bottom right if mirroring is turned on)
-		CGRect faceRect = [ff bounds];
-        
-		// flip preview width and height
-		CGFloat temp = faceRect.size.width;
-		faceRect.size.width = faceRect.size.height;
-		faceRect.size.height = temp;
-		temp = faceRect.origin.x;
-		faceRect.origin.x = faceRect.origin.y;
-		faceRect.origin.y = temp;
-        /*
-		// scale coordinates so they fit in the preview box, which may be scaled
-		CGFloat widthScaleBy = previewBox.size.width / clap.size.height;
-		CGFloat heightScaleBy = previewBox.size.height / clap.size.width;
-		faceRect.size.width *= widthScaleBy;
-		faceRect.size.height *= heightScaleBy;
-		faceRect.origin.x *= widthScaleBy;
-		faceRect.origin.y *= heightScaleBy;
-        
-		if ( isMirrored )
-			faceRect = CGRectOffset(faceRect, previewBox.origin.x + previewBox.size.width - faceRect.size.width - (faceRect.origin.x * 2), previewBox.origin.y);
-		else
-			faceRect = CGRectOffset(faceRect, previewBox.origin.x, previewBox.origin.y);
-		*/
-		CALayer *featureLayer = nil;
-		
-		// re-use an existing layer if possible
-		while ( !featureLayer && (currentSublayer < sublayersCount) ) {
-			CALayer *currentLayer = [sublayers objectAtIndex:currentSublayer++];
-			if ( [[currentLayer name] isEqualToString:@"FaceLayer"] ) {
-				featureLayer = currentLayer;
-				[currentLayer setHidden:NO];
-			}
-		}
-		
-		switch (orientation) {
-			case UIDeviceOrientationPortrait:
-				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(0.))];
-				break;
-			case UIDeviceOrientationPortraitUpsideDown:
-				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(180.))];
-				break;
-			case UIDeviceOrientationLandscapeLeft:
-				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(90.))];
-				break;
-			case UIDeviceOrientationLandscapeRight:
-				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(-90.))];
-				break;
-			case UIDeviceOrientationFaceUp:
-			case UIDeviceOrientationFaceDown:
-			default:
-				break; // leave the layer in its last known orientation
-		}
-		currentFeature++;
-	}
-    	
-	[CATransaction commit];
+    CGSize size = CGSizeZero;
+    if ([gravity isEqualToString:AVLayerVideoGravityResizeAspectFill]) {
+        if (viewRatio > apertureRatio) {
+            size.width = frameSize.width;
+            size.height = apertureSize.width * (frameSize.width / apertureSize.height);
+        } else {
+            size.width = apertureSize.height * (frameSize.height / apertureSize.width);
+            size.height = frameSize.height;
+        }
+    } else if ([gravity isEqualToString:AVLayerVideoGravityResizeAspect]) {
+        if (viewRatio > apertureRatio) {
+            size.width = apertureSize.height * (frameSize.height / apertureSize.width);
+            size.height = frameSize.height;
+        } else {
+            size.width = frameSize.width;
+            size.height = apertureSize.width * (frameSize.width / apertureSize.height);
+        }
+    } else if ([gravity isEqualToString:AVLayerVideoGravityResize]) {
+        size.width = frameSize.width;
+        size.height = frameSize.height;
+    }
+	
+	CGRect videoBox;
+	videoBox.size = size;
+	if (size.width < frameSize.width)
+		videoBox.origin.x = (frameSize.width - size.width) / 2;
+	else
+		videoBox.origin.x = (size.width - frameSize.width) / 2;
+	
+	if ( size.height < frameSize.height )
+		videoBox.origin.y = (frameSize.height - size.height) / 2;
+	else
+		videoBox.origin.y = (size.height - frameSize.height) / 2;
+    
+	return videoBox;
 }
 
 - (void)teardownAVCapture
