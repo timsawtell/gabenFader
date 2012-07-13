@@ -13,6 +13,8 @@
 @property (nonatomic, assign) dispatch_queue_t videoDataOutputQueue;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic, strong) UIImage *square;
+@property (nonatomic, assign) CGPoint leftEyeOrigin;
+@property (nonatomic, assign) CGPoint rightEyeOrigin;
 - (void)fade;
 - (void)creepyFade;
 @end
@@ -22,7 +24,7 @@ static CGFloat kEyeBallWidth = 100.0f;
 static CGFloat kEyeBallHeight = 50.0f;
 
 @implementation ViewController
-@synthesize previewView;
+@synthesize previewView, leftEyeOrigin, rightEyeOrigin;
 @synthesize gabenTopImageView, square, leftEye, rightEye;
 @synthesize gabenImageView, disapprovingEyes, faceDetector, isUsingFrontFacingCamera, videoDataOutput, videoDataOutputQueue, stillImageOutput, previewLayer;
 
@@ -127,6 +129,8 @@ static CGFloat kEyeBallHeight = 50.0f;
     self.gabenTopImageView.frame = self.gabenImageView.frame;
     
     self.leftEye.transform = self.rightEye.transform = self.gabenImageView.transform;
+    self.leftEyeOrigin = self.leftEye.frame.origin;
+    self.rightEyeOrigin = self.rightEye.frame.origin;
     return (interfaceOrientation == UIDeviceOrientationPortrait);
 }
 
@@ -138,18 +142,10 @@ static CGFloat kEyeBallHeight = 50.0f;
 // to detect features and for each draw the red square in a layer and set appropriate orientation
 - (void)drawFaceBoxesForFeatures:(NSArray *)features forVideoBox:(CGRect)clap orientation:(UIDeviceOrientation)orientation
 {
-	NSArray *sublayers = [NSArray arrayWithArray:[previewLayer sublayers]];
-	NSInteger sublayersCount = [sublayers count], currentSublayer = 0;
-	NSInteger featuresCount = [features count], currentFeature = 0;
+	NSInteger featuresCount = [features count];
 	
-	[CATransaction begin];
+    [CATransaction begin];
 	[CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-	
-	// hide all the face layers
-	for ( CALayer *layer in sublayers ) {
-		if ( [[layer name] isEqualToString:@"FaceLayer"] )
-			[layer setHidden:YES];
-	}	
 	
 	if ( featuresCount == 0 ) {
 		[CATransaction commit];
@@ -162,75 +158,49 @@ static CGFloat kEyeBallHeight = 50.0f;
 	CGRect previewBox = [ViewController videoPreviewBoxForGravity:gravity 
                                                                  frameSize:parentFrameSize 
                                                               apertureSize:clap.size];
-	
-	for ( CIFaceFeature *ff in features ) {
-		// find the correct position for the square layer within the previewLayer
-		// the feature box originates in the bottom left of the video frame.
-		// (Bottom right if mirroring is turned on)
-		CGRect faceRect = [ff bounds];
-        
-		// flip preview width and height
-		CGFloat temp = faceRect.size.width;
-		faceRect.size.width = faceRect.size.height;
-		faceRect.size.height = temp;
-		temp = faceRect.origin.x;
-		faceRect.origin.x = faceRect.origin.y;
-		faceRect.origin.y = temp;
-		// scale coordinates so they fit in the preview box, which may be scaled
-		CGFloat widthScaleBy = previewBox.size.width / clap.size.height;
-		CGFloat heightScaleBy = previewBox.size.height / clap.size.width;
-		faceRect.size.width *= widthScaleBy;
-		faceRect.size.height *= heightScaleBy;
-		faceRect.origin.x *= widthScaleBy;
-		faceRect.origin.y *= heightScaleBy;
-        
-		if ( isMirrored )
-			faceRect = CGRectOffset(faceRect, previewBox.origin.x + previewBox.size.width - faceRect.size.width - (faceRect.origin.x * 2), previewBox.origin.y);
-		else
-			faceRect = CGRectOffset(faceRect, previewBox.origin.x, previewBox.origin.y);
-		
-		CALayer *featureLayer = nil;
-		
-		// re-use an existing layer if possible
-		while ( !featureLayer && (currentSublayer < sublayersCount) ) {
-			CALayer *currentLayer = [sublayers objectAtIndex:currentSublayer++];
-			if ( [[currentLayer name] isEqualToString:@"FaceLayer"] ) {
-				featureLayer = currentLayer;
-				[currentLayer setHidden:NO];
-			}
-		}
-		
-		// create a new one if necessary
-		if ( !featureLayer ) {
-			featureLayer = [CALayer new];
-			[featureLayer setContents:(id)[square CGImage]];
-			[featureLayer setName:@"FaceLayer"];
-			[previewLayer addSublayer:featureLayer];
-		}
-		[featureLayer setFrame:faceRect];
-		
-		switch (orientation) {
-			case UIDeviceOrientationPortrait:
-				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(0.))];
-				break;
-			case UIDeviceOrientationPortraitUpsideDown:
-				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(180.))];
-				break;
-			case UIDeviceOrientationLandscapeLeft:
-				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(90.))];
-				break;
-			case UIDeviceOrientationLandscapeRight:
-				[featureLayer setAffineTransform:CGAffineTransformMakeRotation(DegreesToRadians(-90.))];
-				break;
-			case UIDeviceOrientationFaceUp:
-			case UIDeviceOrientationFaceDown:
-			default:
-				break; // leave the layer in its last known orientation
-		}
-		currentFeature++;
-	}
+	CIFaceFeature *ff = [features objectAtIndex:0];
+    CGRect faceRect = [ff bounds];
+    
+    // flip preview width and height
+    CGFloat temp = faceRect.size.width;
+    faceRect.size.width = faceRect.size.height;
+    faceRect.size.height = temp;
+    temp = faceRect.origin.x;
+    faceRect.origin.x = faceRect.origin.y;
+    faceRect.origin.y = temp;
+    // scale coordinates so they fit in the preview box, which may be scaled
+    CGFloat widthScaleBy = previewBox.size.width / clap.size.height;
+    CGFloat heightScaleBy = previewBox.size.height / clap.size.width;
+    faceRect.size.width *= widthScaleBy;
+    faceRect.size.height *= heightScaleBy;
+    faceRect.origin.x *= widthScaleBy;
+    faceRect.origin.y *= heightScaleBy;
+    
+    if ( isMirrored )
+        faceRect = CGRectOffset(faceRect, previewBox.origin.x + previewBox.size.width - faceRect.size.width - (faceRect.origin.x * 2), previewBox.origin.y);
+    else
+        faceRect = CGRectOffset(faceRect, previewBox.origin.x, previewBox.origin.y);
+
+    // now move the eyes muaahahah
+    CGPoint centerOfPreview = [self centerOfRect:self.previewView.frame];
+    CGPoint centerOfFace = [self centerOfRect:faceRect];
+    CGFloat percentMovedX = (centerOfFace.x - centerOfPreview.x) / self.previewLayer.frame.size.width;
+    CGFloat percentMovedY = (centerOfFace.y - centerOfPreview.y) / self.previewLayer.frame.size.height;
+    [self moveEye:self.leftEye byPercentagePoint:CGPointMake(percentMovedX, percentMovedY)];
+    [self moveEye:self.rightEye byPercentagePoint:CGPointMake(percentMovedX, percentMovedY)]; 
 	
 	[CATransaction commit];
+}
+
+- (void)moveEye:(UIImageView *)eyeView byPercentagePoint:(CGPoint)percent
+{
+    CGFloat movementX = kEyeBallWidth * percent.x * 0.1;
+    CGFloat movementY = kEyeBallHeight * percent.y * 0.3;
+    if (eyeView == self.leftEye) {
+        eyeView.frame = CGRectMake(self.leftEyeOrigin.x + movementX, self.leftEyeOrigin.y + movementY, eyeView.frame.size.width, eyeView.frame.size.height);
+    } else {
+        eyeView.frame = CGRectMake(self.rightEyeOrigin.x + movementX, self.rightEyeOrigin.y + movementY, eyeView.frame.size.width, eyeView.frame.size.height);
+    }
 }
 
 - (CGPoint)centerOfRect:(CGRect)rect
