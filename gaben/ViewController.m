@@ -18,25 +18,33 @@
 @end
 
 static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
+static CGFloat kEyeBallWidth = 100.0f;
+static CGFloat kEyeBallHeight = 50.0f;
 
 @implementation ViewController
 @synthesize previewView;
-@synthesize gabenTopImageView, square;
+@synthesize gabenTopImageView, square, leftEye, rightEye;
 @synthesize gabenImageView, disapprovingEyes, faceDetector, isUsingFrontFacingCamera, videoDataOutput, videoDataOutputQueue, stillImageOutput, previewLayer;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    [NSTimer scheduledTimerWithTimeInterval:120 target:self selector:@selector(fade) userInfo:nil repeats:YES];
+    //[NSTimer scheduledTimerWithTimeInterval:120 target:self selector:@selector(fade) userInfo:nil repeats:YES];
     self.disapprovingEyes = YES; 
-    self.gabenImageView.image = [UIImage imageNamed:@"gaben1"];
-    self.gabenTopImageView.image = [UIImage imageNamed:@"gaben1Top"];
-    self.gabenTopImageView.hidden = YES;
+    self.gabenImageView.image = [UIImage imageNamed:@"gabenBottom"];
+    self.gabenTopImageView.image = [UIImage imageNamed:@"gabenTop"];
+    UIImage *left = [UIImage imageNamed:@"iris"];
+    UIImage *right = [UIImage imageNamed:@"iris"];
+    self.leftEye.image = left;
+    self.rightEye.image = right;
+    //change the width and height to be reversed
+    self.leftEye.frame = CGRectMake(self.leftEye.frame.origin.x, self.leftEye.frame.origin.y, 30, 35);
+    self.rightEye.frame = CGRectMake(self.rightEye.frame.origin.x, self.rightEye.frame.origin.y, 30, 35);
     double delayInSeconds = 5.0;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        [self creepyFade];
+       // [self creepyFade];
     });
 }
 
@@ -79,7 +87,7 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
         [UIView animateWithDuration:3 animations:^{
             self.gabenImageView.alpha = 0;
         } completion:^(BOOL finished) {
-            self.gabenImageView.image = [UIImage imageNamed:@"gaben1"];
+            self.gabenImageView.image = [UIImage imageNamed:@"gabenBottom"];
             [UIView animateWithDuration:3 animations:^{
                 self.gabenImageView.alpha = 1;
             }];
@@ -107,12 +115,18 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 {
     if (interfaceOrientation == UIDeviceOrientationLandscapeLeft) {
         self.gabenImageView.transform = CGAffineTransformMakeRotation(DegreesToRadians(90));
+        self.leftEye.frame = CGRectMake(525, 378, self.leftEye.image.size.height, self.leftEye.image.size.width);
+        self.rightEye.frame = CGRectMake(505, 582, self.rightEye.image.size.height, self.rightEye.image.size.width);
     } else if (interfaceOrientation == UIDeviceOrientationLandscapeRight) {
         self.gabenImageView.transform = CGAffineTransformMakeRotation(DegreesToRadians(270));
+        self.leftEye.frame = CGRectMake(235, 406, self.leftEye.image.size.height, self.leftEye.image.size.width);
+        self.rightEye.frame = CGRectMake(215, 613, self.rightEye.image.size.height, self.rightEye.image.size.width);
     }
     self.gabenTopImageView.transform = self.gabenImageView.transform;
     self.gabenImageView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     self.gabenTopImageView.frame = self.gabenImageView.frame;
+    
+    self.leftEye.transform = self.rightEye.transform = self.gabenImageView.transform;
     return (interfaceOrientation == UIDeviceOrientationPortrait);
 }
 
@@ -217,6 +231,12 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 	}
 	
 	[CATransaction commit];
+}
+
+- (CGPoint)centerOfRect:(CGRect)rect
+{
+    CGPoint p = CGPointMake(rect.origin.x + (rect.size.width / 2), rect.origin.y + (rect.size.height / 2));
+    return p;
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection

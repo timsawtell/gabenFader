@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		891A148015B06ABC004212E0 /* gabenBottom.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A147F15B06ABC004212E0 /* gabenBottom.png */; };
+		891A148415B06BC2004212E0 /* iris.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A148315B06BC2004212E0 /* iris.png */; };
+		891A148615B074B7004212E0 /* gabenTop.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A148515B074B7004212E0 /* gabenTop.png */; };
 		89A45C7615B0553700783A4B /* squarePNG.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A45C7515B0553700783A4B /* squarePNG.png */; };
-		89BBDBCB15AA767800475A56 /* gaben1.png in Resources */ = {isa = PBXBuildFile; fileRef = 89BBDBCA15AA767800475A56 /* gaben1.png */; };
-		DD1B616515AE3F870087991C /* gaben1Top.png in Resources */ = {isa = PBXBuildFile; fileRef = DD1B616415AE3F870087991C /* gaben1Top.png */; };
 		DD55833715AE8C1300E4B6D4 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55833615AE8C1300E4B6D4 /* CoreImage.framework */; };
 		DD55833A15AE8C2B00E4B6D4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55833915AE8C2B00E4B6D4 /* ImageIO.framework */; };
 		DD55833C15AE8C3200E4B6D4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55833B15AE8C3200E4B6D4 /* QuartzCore.framework */; };
@@ -30,9 +31,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		891A147F15B06ABC004212E0 /* gabenBottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gabenBottom.png; sourceTree = "<group>"; };
+		891A148315B06BC2004212E0 /* iris.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iris.png; sourceTree = "<group>"; };
+		891A148515B074B7004212E0 /* gabenTop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gabenTop.png; sourceTree = "<group>"; };
 		89A45C7515B0553700783A4B /* squarePNG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = squarePNG.png; path = ../../SquareCam/SquareCam/squarePNG.png; sourceTree = "<group>"; };
-		89BBDBCA15AA767800475A56 /* gaben1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gaben1.png; sourceTree = "<group>"; };
-		DD1B616415AE3F870087991C /* gaben1Top.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gaben1Top.png; sourceTree = "<group>"; };
 		DD55833615AE8C1300E4B6D4 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
 		DD55833915AE8C2B00E4B6D4 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		DD55833B15AE8C3200E4B6D4 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -132,8 +134,9 @@
 			children = (
 				89A45C7515B0553700783A4B /* squarePNG.png */,
 				DDCCEFA115904FE700B390B9 /* gaben.png */,
-				89BBDBCA15AA767800475A56 /* gaben1.png */,
-				DD1B616415AE3F870087991C /* gaben1Top.png */,
+				891A147F15B06ABC004212E0 /* gabenBottom.png */,
+				891A148515B074B7004212E0 /* gabenTop.png */,
+				891A148315B06BC2004212E0 /* iris.png */,
 				DDCCEF8815904EF700B390B9 /* gaben-Info.plist */,
 				DDCCEF8915904EF700B390B9 /* InfoPlist.strings */,
 				DDCCEF8C15904EF700B390B9 /* main.m */,
@@ -197,9 +200,10 @@
 				DDCCEFA215904FE700B390B9 /* gaben.png in Resources */,
 				DDCCEFA91590534700B390B9 /* Icon-iPad.png in Resources */,
 				DDCCEFAB159053EB00B390B9 /* Icon.png in Resources */,
-				89BBDBCB15AA767800475A56 /* gaben1.png in Resources */,
-				DD1B616515AE3F870087991C /* gaben1Top.png in Resources */,
 				89A45C7615B0553700783A4B /* squarePNG.png in Resources */,
+				891A148015B06ABC004212E0 /* gabenBottom.png in Resources */,
+				891A148415B06BC2004212E0 /* iris.png in Resources */,
+				891A148615B074B7004212E0 /* gabenTop.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
