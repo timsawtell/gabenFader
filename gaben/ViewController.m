@@ -15,6 +15,7 @@
 @property (nonatomic, strong) UIImage *square;
 @property (nonatomic, assign) CGPoint leftEyeOrigin;
 @property (nonatomic, assign) CGPoint rightEyeOrigin;
+@property (nonatomic, assign) CGSize eyeSize;
 - (void)fade;
 - (void)creepyFade;
 @end
@@ -23,9 +24,10 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 static CGFloat kEyeBallWidth = 100.0f;
 static CGFloat kEyeBallHeight = 50.0f;
 
+
 @implementation ViewController
 @synthesize previewView, leftEyeOrigin, rightEyeOrigin;
-@synthesize gabenTopImageView, square, leftEye, rightEye;
+@synthesize gabenTopImageView, square, leftEye, rightEye, eyeSize;
 @synthesize gabenImageView, disapprovingEyes, faceDetector, isUsingFrontFacingCamera, videoDataOutput, videoDataOutputQueue, stillImageOutput, previewLayer;
 
 - (void)viewDidLoad
@@ -40,9 +42,8 @@ static CGFloat kEyeBallHeight = 50.0f;
     UIImage *right = [UIImage imageNamed:@"iris"];
     self.leftEye.image = left;
     self.rightEye.image = right;
-    //change the width and height to be reversed
-    self.leftEye.frame = CGRectMake(self.leftEye.frame.origin.x, self.leftEye.frame.origin.y, 30, 35);
-    self.rightEye.frame = CGRectMake(self.rightEye.frame.origin.x, self.rightEye.frame.origin.y, 30, 35);
+    self.eyeSize = CGSizeMake(35, 30);
+    self.previewView.hidden = YES;
     double delayInSeconds = 5.0;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
@@ -115,20 +116,27 @@ static CGFloat kEyeBallHeight = 50.0f;
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
+    CGPoint leftOrigin, rightOrigin;
     if (interfaceOrientation == UIDeviceOrientationLandscapeLeft) {
         self.gabenImageView.transform = CGAffineTransformMakeRotation(DegreesToRadians(90));
-        self.leftEye.frame = CGRectMake(525, 378, self.leftEye.image.size.height, self.leftEye.image.size.width);
-        self.rightEye.frame = CGRectMake(505, 582, self.rightEye.image.size.height, self.rightEye.image.size.width);
+        leftOrigin.x = 520;
+        leftOrigin.y = 378;
+        rightOrigin.x = 502;
+        rightOrigin.y = 585;
     } else if (interfaceOrientation == UIDeviceOrientationLandscapeRight) {
         self.gabenImageView.transform = CGAffineTransformMakeRotation(DegreesToRadians(270));
-        self.leftEye.frame = CGRectMake(235, 406, self.leftEye.image.size.height, self.leftEye.image.size.width);
-        self.rightEye.frame = CGRectMake(215, 613, self.rightEye.image.size.height, self.rightEye.image.size.width);
+        leftOrigin.x = 233;
+        leftOrigin.y = 408;
+        rightOrigin.x = 215;
+        rightOrigin.y = 616;
     }
     self.gabenTopImageView.transform = self.gabenImageView.transform;
     self.gabenImageView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
     self.gabenTopImageView.frame = self.gabenImageView.frame;
     
     self.leftEye.transform = self.rightEye.transform = self.gabenImageView.transform;
+    self.leftEye.frame = CGRectMake(leftOrigin.x, leftOrigin.y, self.eyeSize.width, self.eyeSize.height);
+    self.rightEye.frame = CGRectMake(rightOrigin.x, rightOrigin.y, self.eyeSize.width, self.eyeSize.height);
     self.leftEyeOrigin = self.leftEye.frame.origin;
     self.rightEyeOrigin = self.rightEye.frame.origin;
     return (interfaceOrientation == UIDeviceOrientationPortrait);
@@ -197,9 +205,9 @@ static CGFloat kEyeBallHeight = 50.0f;
     CGFloat movementX = kEyeBallWidth * percent.x * 0.1;
     CGFloat movementY = kEyeBallHeight * percent.y * 0.3;
     if (eyeView == self.leftEye) {
-        eyeView.frame = CGRectMake(self.leftEyeOrigin.x + movementX, self.leftEyeOrigin.y + movementY, eyeView.frame.size.width, eyeView.frame.size.height);
+        eyeView.frame = CGRectMake(self.leftEyeOrigin.x + movementX, self.leftEyeOrigin.y + movementY, self.eyeSize.width, self.eyeSize.height);
     } else {
-        eyeView.frame = CGRectMake(self.rightEyeOrigin.x + movementX, self.rightEyeOrigin.y + movementY, eyeView.frame.size.width, eyeView.frame.size.height);
+        eyeView.frame = CGRectMake(self.rightEyeOrigin.x + movementX, self.rightEyeOrigin.y + movementY, self.eyeSize.width, self.eyeSize.height);
     }
 }
 
@@ -219,14 +227,6 @@ static CGFloat kEyeBallHeight = 50.0f;
 	NSDictionary *imageOptions = nil;
 	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
 	int exifOrientation;
-	
-    /* kCGImagePropertyOrientation values
-     The intended display orientation of the image. If present, this key is a CFNumber value with the same value as defined
-     by the TIFF and EXIF specifications -- see enumeration of integer constants. 
-     The value specified where the origin (0,0) of the image is located. If not present, a value of 1 is assumed.
-     
-     used when calling featuresInImage: options: The value for this key is an integer NSNumber from 1..8 as found in kCGImagePropertyOrientation.
-     If present, the detection will be done based on that orientation but the coordinates in the returned features will still be based on those of the image. */
     
 	enum {
 		PHOTOS_EXIF_0ROW_TOP_0COL_LEFT			= 1, //   1  =  0th row is at the top, and 0th column is on the left (THE DEFAULT).
