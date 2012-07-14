@@ -34,7 +34,7 @@ static CGFloat kEyeBallHeight = 50.0f;
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    //[NSTimer scheduledTimerWithTimeInterval:120 target:self selector:@selector(fade) userInfo:nil repeats:YES];
+    [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(fade) userInfo:nil repeats:YES];
     self.disapprovingEyes = YES; 
     self.gabenImageView.image = [UIImage imageNamed:@"gabenBottom"];
     self.gabenTopImageView.image = [UIImage imageNamed:@"gabenTop"];
@@ -44,10 +44,10 @@ static CGFloat kEyeBallHeight = 50.0f;
     self.rightEye.image = right;
     self.eyeSize = CGSizeMake(35, 30);
     self.previewView.hidden = YES;
-    double delayInSeconds = 5.0;
+    double delayInSeconds = 150.0;
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-       // [self creepyFade];
+        [self creepyFade];
     });
 }
 
@@ -59,17 +59,17 @@ static CGFloat kEyeBallHeight = 50.0f;
 
 - (void)creepyFade
 {
-    self.gabenTopImageView.alpha = 0.5f;
-    self.gabenTopImageView.hidden = NO;
+    self.gabenTopImageView.alpha = 0.5;
     [UIView animateWithDuration:10 animations:^{
-        self.gabenTopImageView.alpha = 0.2f;
-        self.gabenImageView.alpha = 0;
+        self.leftEye.alpha = self.rightEye.alpha = 0.7;
+        self.gabenImageView.alpha = 0.05;
+        self.gabenTopImageView.alpha = 0;
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:10 animations:^{
             self.gabenImageView.alpha = 1;
-            self.gabenTopImageView.alpha = 0;
+            self.gabenTopImageView.alpha = 1;
+            self.leftEye.alpha = self.rightEye.alpha = 1;
         } completion:^(BOOL finished) {
-            self.gabenTopImageView.hidden = YES;
         }];
     }];
 }
@@ -78,9 +78,10 @@ static CGFloat kEyeBallHeight = 50.0f;
 {
     if (self.disapprovingEyes) {
         [UIView animateWithDuration:3 animations:^{
-            self.gabenImageView.alpha = 0;
+            self.leftEye.alpha = self.rightEye.alpha = self.gabenImageView.alpha = self.gabenTopImageView.alpha = 0;
         } completion:^(BOOL finished) {
             self.gabenImageView.image = [UIImage imageNamed:@"gaben"];
+            self.gabenTopImageView.hidden = self.leftEye.hidden = self.rightEye.hidden = YES;
             [UIView animateWithDuration:3 animations:^{
                 self.gabenImageView.alpha = 1;
             }];
@@ -91,8 +92,9 @@ static CGFloat kEyeBallHeight = 50.0f;
             self.gabenImageView.alpha = 0;
         } completion:^(BOOL finished) {
             self.gabenImageView.image = [UIImage imageNamed:@"gabenBottom"];
+            self.gabenTopImageView.hidden = self.leftEye.hidden = self.rightEye.hidden = NO;
             [UIView animateWithDuration:3 animations:^{
-                self.gabenImageView.alpha = 1;
+                self.leftEye.alpha = self.rightEye.alpha = self.gabenTopImageView.alpha = self.gabenImageView.alpha = 1;
             }];
         }];
         
