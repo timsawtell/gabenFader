@@ -10,7 +10,6 @@
 		891A148015B06ABC004212E0 /* gabenBottom.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A147F15B06ABC004212E0 /* gabenBottom.png */; };
 		891A148415B06BC2004212E0 /* iris.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A148315B06BC2004212E0 /* iris.png */; };
 		891A148615B074B7004212E0 /* gabenTop.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A148515B074B7004212E0 /* gabenTop.png */; };
-		89A45C7615B0553700783A4B /* squarePNG.png in Resources */ = {isa = PBXBuildFile; fileRef = 89A45C7515B0553700783A4B /* squarePNG.png */; };
 		DD55833715AE8C1300E4B6D4 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55833615AE8C1300E4B6D4 /* CoreImage.framework */; };
 		DD55833A15AE8C2B00E4B6D4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55833915AE8C2B00E4B6D4 /* ImageIO.framework */; };
 		DD55833C15AE8C3200E4B6D4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD55833B15AE8C3200E4B6D4 /* QuartzCore.framework */; };
@@ -25,7 +24,6 @@
 		DDCCEF9115904EF700B390B9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DDCCEF9015904EF700B390B9 /* AppDelegate.m */; };
 		DDCCEF9415904EF700B390B9 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DDCCEF9215904EF700B390B9 /* MainStoryboard.storyboard */; };
 		DDCCEF9715904EF700B390B9 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DDCCEF9615904EF700B390B9 /* ViewController.m */; };
-		DDCCEFA215904FE700B390B9 /* gaben.png in Resources */ = {isa = PBXBuildFile; fileRef = DDCCEFA115904FE700B390B9 /* gaben.png */; };
 		DDCCEFA91590534700B390B9 /* Icon-iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = DDCCEFA81590534700B390B9 /* Icon-iPad.png */; };
 		DDCCEFAB159053EB00B390B9 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DDCCEFAA159053EB00B390B9 /* Icon.png */; };
 /* End PBXBuildFile section */
@@ -34,7 +32,6 @@
 		891A147F15B06ABC004212E0 /* gabenBottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gabenBottom.png; sourceTree = "<group>"; };
 		891A148315B06BC2004212E0 /* iris.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iris.png; sourceTree = "<group>"; };
 		891A148515B074B7004212E0 /* gabenTop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gabenTop.png; sourceTree = "<group>"; };
-		89A45C7515B0553700783A4B /* squarePNG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = squarePNG.png; path = ../../SquareCam/SquareCam/squarePNG.png; sourceTree = "<group>"; };
 		DD55833615AE8C1300E4B6D4 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
 		DD55833915AE8C2B00E4B6D4 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		DD55833B15AE8C3200E4B6D4 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -55,7 +52,6 @@
 		DDCCEF9315904EF700B390B9 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		DDCCEF9515904EF700B390B9 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		DDCCEF9615904EF700B390B9 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		DDCCEFA115904FE700B390B9 /* gaben.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gaben.png; sourceTree = "<group>"; };
 		DDCCEFA81590534700B390B9 /* Icon-iPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-iPad.png"; sourceTree = "<group>"; };
 		DDCCEFAA159053EB00B390B9 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -132,8 +128,6 @@
 		DDCCEF8715904EF700B390B9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				89A45C7515B0553700783A4B /* squarePNG.png */,
-				DDCCEFA115904FE700B390B9 /* gaben.png */,
 				891A147F15B06ABC004212E0 /* gabenBottom.png */,
 				891A148515B074B7004212E0 /* gabenTop.png */,
 				891A148315B06BC2004212E0 /* iris.png */,
@@ -197,10 +191,8 @@
 			files = (
 				DDCCEF8B15904EF700B390B9 /* InfoPlist.strings in Resources */,
 				DDCCEF9415904EF700B390B9 /* MainStoryboard.storyboard in Resources */,
-				DDCCEFA215904FE700B390B9 /* gaben.png in Resources */,
 				DDCCEFA91590534700B390B9 /* Icon-iPad.png in Resources */,
 				DDCCEFAB159053EB00B390B9 /* Icon.png in Resources */,
-				89A45C7615B0553700783A4B /* squarePNG.png in Resources */,
 				891A148015B06ABC004212E0 /* gabenBottom.png in Resources */,
 				891A148415B06BC2004212E0 /* iris.png in Resources */,
 				891A148615B074B7004212E0 /* gabenTop.png in Resources */,
